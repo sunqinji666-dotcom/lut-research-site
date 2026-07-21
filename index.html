@@ -1,0 +1,744 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Jack的光影实验室 | 光感Jack</title>
+    <style>
+      :root {
+        --bg: #0d0f14;
+        --panel: rgba(18, 22, 31, 0.78);
+        --panel-2: rgba(255, 255, 255, 0.04);
+        --border: rgba(255, 255, 255, 0.09);
+        --text: #f3efe8;
+        --muted: #b6b0a6;
+        --muted-2: #8b857c;
+        --accent: #f0b86b;
+        --accent-2: #9ad7ff;
+        --good: #71d38f;
+        --shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+        --radius: 28px;
+      }
+
+      * { box-sizing: border-box; }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(circle at 20% 10%, rgba(240, 184, 107, 0.14), transparent 28%),
+          radial-gradient(circle at 85% 0%, rgba(154, 215, 255, 0.12), transparent 26%),
+          linear-gradient(180deg, #11141b 0%, #0d0f14 52%, #090b0f 100%);
+        min-height: 100vh;
+      }
+
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+        background-size: 36px 36px;
+        mask-image: linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0));
+        opacity: 0.35;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .wrap {
+        width: min(1160px, calc(100vw - 24px));
+        margin: 0 auto;
+        padding: 18px 0 34px;
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 14px;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 22px;
+        background: rgba(255,255,255,0.03);
+        backdrop-filter: blur(14px);
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 14px;
+        z-index: 20;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .brand-mark {
+        width: 34px;
+        height: 34px;
+        border-radius: 12px;
+        background:
+          linear-gradient(145deg, rgba(240,184,107,0.95), rgba(154,215,255,0.9));
+        box-shadow: 0 10px 30px rgba(240, 184, 107, 0.24);
+      }
+
+      .brand h1 {
+        font-size: 14px;
+        margin: 0;
+        letter-spacing: 0.08em;
+        text-transform: none;
+      }
+
+      .brand p {
+        margin: 2px 0 0;
+        font-size: 12px;
+        color: var(--muted);
+      }
+
+      .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        color: var(--muted);
+        background: rgba(255,255,255,0.03);
+        font-size: 13px;
+        white-space: nowrap;
+      }
+
+      .hero {
+        margin-top: 18px;
+        padding: 22px;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.055), rgba(255,255,255,0.02)),
+          var(--panel);
+        box-shadow: var(--shadow);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        inset: auto -6% -36% auto;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(240,184,107,0.18), transparent 66%);
+        filter: blur(18px);
+        pointer-events: none;
+      }
+
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.08fr) 340px;
+        gap: 16px;
+        align-items: start;
+      }
+
+      .eyebrow {
+        display: inline-flex;
+        gap: 10px;
+        align-items: center;
+        padding: 8px 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.04);
+        color: var(--muted);
+        font-size: 12px;
+        letter-spacing: 0.04em;
+      }
+
+      .hero h2 {
+        margin: 14px 0 8px;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Songti SC", serif;
+        font-size: clamp(34px, 5.5vw, 58px);
+        line-height: 0.96;
+        letter-spacing: -0.03em;
+      }
+
+      .hero .lead {
+        max-width: 60ch;
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 16px;
+      }
+
+      .chip {
+        padding: 7px 11px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: #efe7db;
+        font-size: 12px;
+      }
+
+      .progress-panel {
+        padding: 16px;
+        border-radius: 20px;
+        background:
+          linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02)),
+          rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        backdrop-filter: blur(12px);
+      }
+
+      .progress-kicker {
+        color: var(--accent);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-size: 12px;
+      }
+
+      .progress-number {
+        display: flex;
+        align-items: end;
+        gap: 6px;
+        margin-top: 10px;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Songti SC", serif;
+        line-height: 1;
+      }
+
+      .progress-number strong {
+        font-size: clamp(42px, 6vw, 66px);
+        letter-spacing: -0.04em;
+      }
+
+      .progress-number small {
+        font-size: 14px;
+        color: var(--muted);
+        padding-bottom: 8px;
+      }
+
+      .progress-bar {
+        position: relative;
+        margin-top: 12px;
+        height: 10px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.07);
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2), var(--good));
+        background-size: 180% 100%;
+        animation: shimmer 3.4s linear infinite;
+        box-shadow: 0 0 28px rgba(240,184,107,0.3);
+      }
+
+      .progress-note {
+        margin-top: 10px;
+        color: #efe7db;
+        font-size: 13px;
+        line-height: 1.6;
+      }
+
+      .progress-grid {
+        display: grid;
+        gap: 10px;
+        margin-top: 14px;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .mini-card {
+        padding: 10px 11px;
+        border-radius: 14px;
+        background: rgba(255,255,255,0.04);
+        border: 1px solid rgba(255,255,255,0.08);
+      }
+
+      .mini-card .k {
+        color: var(--muted-2);
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      .mini-card .v {
+        margin-top: 6px;
+        font-size: 13px;
+        line-height: 1.5;
+        color: var(--text);
+      }
+
+      .section {
+        margin-top: 18px;
+        display: grid;
+        gap: 14px;
+      }
+
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: end;
+        gap: 16px;
+      }
+
+      .section-head h3 {
+        margin: 0;
+        font-size: 16px;
+        letter-spacing: 0.02em;
+      }
+
+      .section-head p {
+        margin: 0;
+        color: var(--muted-2);
+        font-size: 12px;
+      }
+
+      .timeline {
+        display: grid;
+        gap: 12px;
+      }
+
+      .day {
+        display: grid;
+        grid-template-columns: 116px minmax(0, 1fr);
+        gap: 14px;
+        padding: 14px;
+        border-radius: 20px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.03);
+        box-shadow: var(--shadow);
+      }
+
+      .day-date {
+        padding: 14px 12px;
+        border-radius: 16px;
+        background: linear-gradient(180deg, rgba(240,184,107,0.16), rgba(154,215,255,0.08));
+        border: 1px solid rgba(255,255,255,0.08);
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 104px;
+      }
+
+      .day-date .date {
+        font-size: 11px;
+        color: var(--accent);
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .day-date .day-no {
+        margin-top: 0;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Songti SC", serif;
+        font-size: 24px;
+        line-height: 1;
+      }
+
+      .day-main h4 {
+        margin: 0;
+        font-size: 19px;
+        line-height: 1.35;
+      }
+
+      .meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin: 10px 0 0;
+      }
+
+      .meta .tag {
+        padding: 5px 9px;
+        border-radius: 999px;
+        border: 1px solid rgba(255,255,255,0.1);
+        background: rgba(255,255,255,0.03);
+        color: var(--muted);
+        font-size: 11px;
+      }
+
+      .summary {
+        margin-top: 10px;
+        color: #e9e2d7;
+        line-height: 1.7;
+        max-width: 72ch;
+        font-size: 14px;
+      }
+
+      .bullets {
+        display: grid;
+        gap: 7px;
+        margin: 10px 0 0;
+        padding-left: 0;
+        list-style: none;
+      }
+
+      .bullets li {
+        padding-left: 15px;
+        position: relative;
+        color: var(--muted);
+        line-height: 1.65;
+        font-size: 13px;
+      }
+
+      .bullets li::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 8px;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--good);
+        box-shadow: 0 0 0 3px rgba(113, 211, 143, 0.10);
+      }
+
+      .entry-progress {
+        margin-top: 12px;
+        height: 7px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.06);
+        overflow: hidden;
+      }
+
+      .entry-progress span {
+        display: block;
+        height: 100%;
+        width: 0%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, rgba(240,184,107,0.95), rgba(154,215,255,0.95));
+      }
+
+      .entry-footer {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 12px;
+        margin-top: 10px;
+        color: var(--muted-2);
+        font-size: 12px;
+      }
+
+      .entry-footer strong {
+        color: #efe7db;
+        font-weight: 600;
+      }
+
+      .image-slot {
+        margin-top: 10px;
+        border-radius: 16px;
+        border: 1px dashed rgba(255,255,255,0.16);
+        background: rgba(255,255,255,0.03);
+        color: var(--muted);
+        padding: 8px;
+      }
+
+      .image-slot img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 12px;
+      }
+
+      .footer {
+        margin-top: 18px;
+        padding: 14px 16px;
+        border-radius: 16px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.03);
+        color: var(--muted);
+        line-height: 1.7;
+        font-size: 12px;
+      }
+
+      .footer code {
+        color: #f5efe6;
+        background: rgba(255,255,255,0.06);
+        padding: 2px 6px;
+        border-radius: 8px;
+      }
+
+      @keyframes shimmer {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
+      }
+
+      .current-dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--good);
+        box-shadow: 0 0 0 0 rgba(113, 211, 143, 0.5);
+        animation: pulse 2s ease-in-out infinite;
+      }
+
+      @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(113, 211, 143, 0.45); }
+        70% { box-shadow: 0 0 0 10px rgba(113, 211, 143, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(113, 211, 143, 0); }
+      }
+
+      @media (max-width: 980px) {
+        .hero-grid,
+        .day {
+          grid-template-columns: 1fr;
+        }
+
+        .day-date {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 12px;
+        }
+
+        .day-date .day-no {
+          margin-top: 0;
+          font-size: 22px;
+        }
+      }
+
+      @media (max-width: 640px) {
+        .wrap {
+          width: min(100vw - 20px, 1280px);
+          padding-top: 12px;
+        }
+
+        .topbar {
+          position: static;
+          padding: 12px 14px;
+          border-radius: 22px;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .hero {
+          padding: 18px;
+        }
+
+        .hero h2 {
+          font-size: 38px;
+        }
+
+        .section-head {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+
+        .progress-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header class="topbar">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true"></div>
+          <div>
+            <h1>Jack的光影实验室</h1>
+            <p>Jack的光影实验室 · 闲鱼 / 小红书 / LUT 增量研究页</p>
+          </div>
+        </div>
+        <div class="pill" id="status-pill">加载中...</div>
+      </header>
+
+      <section class="hero">
+        <div class="hero-grid">
+          <div>
+            <div class="eyebrow"><span class="current-dot" aria-hidden="true"></span> Daily notes · incremental update · light / LUT / AI</div>
+            <h2 id="hero-title">Jack的光影实验室</h2>
+            <p class="lead" id="hero-lead">
+              这是一页会持续长大的网页。我们不堆大块内容，只保留每天真正推进的一步：今天做了什么、下一步往哪走、哪里开始能卖。
+            </p>
+            <div class="chips" id="hero-chips"></div>
+          </div>
+
+          <aside class="progress-panel">
+            <div class="progress-kicker">每日进步系统</div>
+            <div class="progress-number"><strong id="progress-value">—</strong><small>%</small></div>
+            <div class="progress-bar"><span class="progress-fill" id="progress-fill"></span></div>
+            <div class="progress-note" id="progress-note">—</div>
+            <div class="progress-grid">
+              <div class="mini-card">
+                <div class="k">今日标题</div>
+                <div class="v" id="metric-title">—</div>
+              </div>
+              <div class="mini-card">
+                <div class="k">研究方向</div>
+                <div class="v" id="metric-focus">—</div>
+              </div>
+              <div class="mini-card">
+                <div class="k">最新更新时间</div>
+                <div class="v" id="metric-updated">—</div>
+              </div>
+              <div class="mini-card">
+                <div class="k">下一步</div>
+                <div class="v" id="metric-next">—</div>
+              </div>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <div>
+            <h3>每日研究</h3>
+            <p>按天追加，每天一个标题。卡片要短、要紧、要能看出推进，不要留大面积空白。</p>
+          </div>
+          <div class="pill">建议更新路径：只改 `data/entries.json`</div>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </section>
+
+      <section class="footer">
+        图片如果后面要补，统一放到七牛云单独目录里，再把外链写进 <code>data/entries.json</code>。
+        当前没有图片时不会显示占位框，先让页面保持轻量。后续只做增量更新，不重建整页。
+      </section>
+    </div>
+
+    <script>
+      const fmt = new Intl.DateTimeFormat("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        weekday: "short",
+      });
+
+      const fallback = {
+        siteTitle: "Jack的光影实验室",
+        subtitle: "闲鱼 / 小红书 双平台调研与产品化记录",
+        updatedAt: "2026-06-04",
+        tags: ["闲鱼成交", "小红书种草", "摄影后期", "LUT", "AI工作流"],
+        entries: [
+          {
+            date: "2026-06-04",
+            title: "启动：闲鱼 + 小红书双平台策略",
+            focus: ["账号统一", "产品分工", "先成交后种草"],
+            summary:
+            "先用闲鱼验证成交，先把能卖的东西跑起来；小红书负责内容信任和审美表达。统一账号名为 Jack的光影实验室，先用低门槛的数字产品建立第一轮反馈。",
+            bullets: [
+              "闲鱼是现金流，小红书是信任层，前期不要把两边混成一个动作。",
+              "柴姐负责上架、回复、发货和日常运营，你负责产品与内容底稿。",
+              "首发优先考虑调色 LUT 包，而不是泛 AI 教程。",
+            ],
+          },
+          {
+            date: "2026-06-04",
+            title: "实地调研：LUT 在小红书的表达方式",
+            focus: ["正确用法/错误用法", "成片感", "风格词"],
+            summary:
+              "小红书上和 LUT 相关的内容并不是单纯卖文件，而是卖方法、卖审美、卖成片结果。常见标题会用‘私藏调色Lut’、‘iPhone LUT’、‘电影感LUT’等风格词去组织搜索流量。",
+            bullets: [
+              "小红书更像内容信任层：先种草，再导流。",
+              "LUT 不是单品，而是一套表达方式。",
+              "最适合你的风格优先级：电影感、旅行感、人像肤色、商业通透感。",
+            ],
+          },
+        ],
+      };
+
+      function escapeHtml(text) {
+        return String(text)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#39;");
+      }
+
+      async function loadData() {
+        try {
+          const res = await fetch("./data/entries.json", { cache: "no-store" });
+          if (!res.ok) throw new Error(String(res.status));
+          return await res.json();
+        } catch (error) {
+          console.warn("Using fallback data:", error);
+          return fallback;
+        }
+      }
+
+      function render(data) {
+        const entries = Array.isArray(data.entries) ? data.entries : [];
+        const latest = entries[0] || {};
+        const latestProgress = Number.isFinite(Number(latest.progress))
+          ? Math.max(0, Math.min(100, Number(latest.progress)))
+          : Math.min(92, 24 + entries.length * 8);
+        const latestNext = latest.next || data.next || "继续把标题、产品、页面结构往前推一步。";
+
+        document.title = `${data.siteTitle || fallback.siteTitle}`;
+        document.getElementById("hero-title").textContent = data.siteTitle || fallback.siteTitle;
+        document.getElementById("hero-lead").textContent = data.subtitle || fallback.subtitle;
+        document.getElementById("metric-title").textContent = latest.title || "—";
+        document.getElementById("metric-focus").textContent = (latest.focus || []).join(" / ") || "—";
+        document.getElementById("metric-updated").textContent = data.updatedAt || "—";
+        document.getElementById("metric-next").textContent = latestNext;
+        document.getElementById("progress-value").textContent = String(latestProgress);
+        document.getElementById("progress-fill").style.width = `${latestProgress}%`;
+        document.getElementById("progress-note").textContent =
+          latest.summary || "今天先把最重要的一步推进掉，再回头补细节。";
+        document.getElementById("status-pill").textContent = `已加载 ${entries.length} 条记录`;
+
+        const chips = document.getElementById("hero-chips");
+        chips.innerHTML = (data.tags || fallback.tags).map((tag) => `<span class="chip">${escapeHtml(tag)}</span>`).join("");
+
+        const timeline = document.getElementById("timeline");
+        timeline.innerHTML = entries.map((entry, index) => {
+          const dateText = entry.date ? fmt.format(new Date(entry.date + "T12:00:00")) : `Day ${index + 1}`;
+          const bullets = (entry.bullets || []).map((bullet) => `<li>${escapeHtml(bullet)}</li>`).join("");
+          const focus = (entry.focus || []).map((item) => `<span class="tag">${escapeHtml(item)}</span>`).join("");
+          const entryProgress = Number.isFinite(Number(entry.progress))
+            ? Math.max(0, Math.min(100, Number(entry.progress)))
+            : Math.max(12, Math.min(88, 22 + index * 10));
+          const entryNext = entry.next || "继续推进下一步。";
+          const imageBlock = entry.image
+            ? `<div class="image-slot"><img src="${escapeHtml(entry.image)}" alt="${escapeHtml(entry.title || "research image")}"></div>`
+            : "";
+
+          return `
+            <article class="day">
+              <div class="day-date">
+                <div class="date">${escapeHtml(dateText)}</div>
+                <div class="day-no">${String(index + 1).padStart(2, "0")}</div>
+              </div>
+              <div class="day-main">
+                <h4>${escapeHtml(entry.title || "未命名标题")}</h4>
+                <div class="meta">${focus}</div>
+                <p class="summary">${escapeHtml(entry.summary || "")}</p>
+                <ul class="bullets">${bullets}</ul>
+                <div class="entry-progress"><span style="width:${entryProgress}%"></span></div>
+                <div class="entry-footer">
+                  <span>推进 <strong>${entryProgress}%</strong></span>
+                  <span>下一步 ${escapeHtml(entryNext)}</span>
+                </div>
+                ${imageBlock}
+              </div>
+            </article>
+          `;
+        }).join("");
+      }
+
+      loadData().then(render);
+    </script>
+  </body>
+</html>
