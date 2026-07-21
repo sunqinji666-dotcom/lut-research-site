@@ -4,7 +4,7 @@
 
 Contact: **Jacksun** · [qinji@jack-sun.com](mailto:qinji@jack-sun.com)
 
-![LUT Research Site 主视觉：调色参考、素材索引与视觉研究的概念示意。](docs/assets/hero-system-v1.png)
+![lut-research-site project visual](docs/assets/lut-research-site-hero.png)
 
 ## 本地预览
 

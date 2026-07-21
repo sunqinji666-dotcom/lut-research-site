@@ -2,7 +2,7 @@
 
 A focused research site for color transforms, LUT references, and visual tests.
 
-![Project visual](docs/assets/hero-system-v1.png)
+![lut-research-site project visual](assets/lut-research-site-hero.png)
 
 Language: Русский. See the [English guide](README.en.md) or [中文首页](../README.md) for setup, privacy, and contribution details.
 

@@ -2,7 +2,7 @@
 
 A focused research site for color transforms, LUT references, and visual tests.
 
-![Project visual](docs/assets/hero-system-v1.png)
+![lut-research-site project visual](assets/lut-research-site-hero.png)
 
 ## What it does
 
