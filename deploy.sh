@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-KEY="$HOME/Library/Mobile Documents/com~apple~CloudDocs/guangzhou_txy_25123.pem"
-REMOTE="ubuntu@119.29.193.16"
+KEY="${DEPLOY_SSH_KEY:?Set DEPLOY_SSH_KEY to a local key path}"
+REMOTE="${DEPLOY_REMOTE:?Set DEPLOY_REMOTE to user@host}"
 SRC_DIR="$(cd "$(dirname "$0")" && pwd)"
 DEST="${1:?Usage: ./deploy.sh /absolute/deployment/path}"
 
